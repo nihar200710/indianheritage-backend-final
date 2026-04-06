@@ -1,0 +1,4 @@
+echo "target/" > .gitignore
+echo ".mvn/" >> .gitignore
+echo "mvnw" >> .gitignore
+echo "mvnw.cmd" >> .gitignore
