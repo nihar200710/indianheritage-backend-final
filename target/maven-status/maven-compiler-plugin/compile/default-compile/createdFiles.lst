@@ -1,3 +1,4 @@
+com\sanchari\backend\controller\UserController.class
 com\sanchari\backend\repository\BookingRepository.class
 com\sanchari\backend\model\User.class
 com\sanchari\backend\config\CorsConfig.class
