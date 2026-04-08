@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/monuments")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class MonumentController {
 
     @Autowired

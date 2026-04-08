@@ -1,23 +1,9 @@
 package com.sanchari.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "thread_messages")
@@ -26,28 +12,19 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 public class ThreadMessage {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String author; // 👈 This was missing or named differently!
     
-    @JsonProperty("user")
-    private String authorName;
-    
-    private String msg;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "thread_id")
-    @JsonBackReference
-    @ToString.Exclude
     private ForumThread thread;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @CreationTimestamp
-    @Column(updatable = false)
     private LocalDateTime createdAt;
-
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 @Configuration
 public class DataInitializer {
@@ -17,39 +17,89 @@ public class DataInitializer {
                                BookingRepository bookingRepository,
                                ForumThreadRepository forumThreadRepository) {
         return args -> {
+            
+            // 1. Initialize Users
             if (userRepository.count() == 0) {
-                userRepository.save(new User(null, "Super Admin", "admin@test.com", "123", "admin"));
-                userRepository.save(new User(null, "Rahul (Enthusiast)", "enthusiast@test.com", "123", "enthusiast"));
-                userRepository.save(new User(null, "Anita (Creator)", "creator@test.com", "123", "creator"));
-                userRepository.save(new User(null, "Ramesh (Guide)", "guide@test.com", "123", "guide"));
-            }
-
-            if (monumentRepository.count() == 0) {
-                monumentRepository.save(new Monument(null, "Taj Mahal", "Agra, Uttar Pradesh", 
-                "An immense mausoleum of white marble, built in Agra between 1631 and 1648 by order of the Mughal emperor Shah Jahan in memory of his favourite wife.", 
-                "Commissioned in 1632, the Taj Mahal took over 20 years to build and employed roughly 20,000 artisans.", 
-                "It features perfect symmetrical planning, a massive white marble dome, and intricate pietra dura using semi-precious stones.", 
-                "Taj Mahal, Agra, India", "Rahul Sharma", null, null));
+                userRepository.save(User.builder()
+                    .name("Super Admin")
+                    .email("admin@test.com")
+                    .password("$2a$10$/ck7Fgd2hXz9wL376D0ONuD1VcmGtnSKMW/cuOUsIAbiJw3PsEmIe") // Hashed "123"
+                    .role("admin")
+                    .build());
                 
-                monumentRepository.save(new Monument(null, "Hampi Monuments", "Vijayanagara, Karnataka", 
-                "The grandiose site of Hampi was the last capital of the last great Hindu Kingdom of Vijayanagar.", 
-                "Founded in the 14th century, Hampi was a prosperous, wealthy, and grand city.", 
-                "Famous for its large-scale Dravidian architecture, particularly the Virupaksha Temple and the iconic Stone Chariot.", 
-                "Hampi, Karnataka, India", "Priya Patel", null, null));
+                userRepository.save(User.builder()
+                    .name("Rahul")
+                    .email("guide@test.com")
+                    .password("$2a$10$/ck7Fgd2hXz9wL376D0ONuD1VcmGtnSKMW/cuOUsIAbiJw3PsEmIe")
+                    .role("guide")
+                    .build());
             }
 
+            // 2. Initialize Monuments (Using 'description' to match your DB)
+            if (monumentRepository.count() == 0) {
+                monumentRepository.save(Monument.builder()
+                    .name("Taj Mahal")
+                    .location("Agra, Uttar Pradesh")
+                    .description("An immense mausoleum of white marble, built between 1631 and 1648.")
+                    .history("Commissioned by Shah Jahan in memory of his favorite wife, Mumtaz Mahal.")
+                    .architecture("A masterpiece of Mughal architecture combining Persian and Indian styles.")
+                    .mapQuery("Taj Mahal, Agra, India")
+                    .guide("Rahul Sharma")
+                    .build());
+                
+                monumentRepository.save(Monument.builder()
+                    .name("Hampi Monuments")
+                    .location("Vijayanagara, Karnataka")
+                    .description("A grand site containing the ruins of the capital of the Vijayanagara Empire.")
+                    .history("A prosperous city from the 14th century, famous for its grand Hindu temples.")
+                    .architecture("Famous for its Dravidian style, especially the Vitthala Temple stone chariot.")
+                    .mapQuery("Hampi, Karnataka, India")
+                    .guide("Priya Patel")
+                    .build());
+            }
+
+            // 3. Initialize Bookings
             if (bookingRepository.count() == 0) {
-                bookingRepository.save(Booking.builder().title("Taj Mahal: Sunset Architecture Tour").type("Heritage Site").guide("Rahul Sharma").date("2026-10-25").time("17:30").status("Upcoming").build());
-                bookingRepository.save(Booking.builder().title("Hidden Secrets of Ajanta Caves").type("Heritage Site").guide("Priya Patel").date("2026-11-02").time("10:00").status("Upcoming").build());
+                bookingRepository.save(Booking.builder()
+                    .title("Taj Mahal: Sunset Architecture Tour")
+                    .type("Heritage Site")
+                    .guide("Rahul Sharma")
+                    .date("2026-10-25")
+                    .time("17:30")
+                    .status("Upcoming")
+                    .build());
             }
 
+            // 4. Initialize Forum Threads & Messages
             if (forumThreadRepository.count() == 0) {
-                ForumThread t1 = new ForumThread(null, "Best time of day to visit the Taj Mahal?", "TravelBug99", "Travel Advice", 1, "2 hours ago", null, null, null);
+                ForumThread t1 = ForumThread.builder()
+                    .title("Best time of day to visit the Taj Mahal?")
+                    .author("TravelBug99")
+                    .category("Travel Advice")
+                    .replies(2)
+                    .lastActive("2 hours ago")
+                    .conversation(new ArrayList<>())
+                    .build();
+                
                 t1 = forumThreadRepository.save(t1);
-                t1.getConversation().add(new ThreadMessage(null, "TravelBug99", "I'm planning a virtual tour and a real visit later this year. Is sunrise or sunset better for photography?", t1, null, null));
-                t1.getConversation().add(new ThreadMessage(null, "RahulGuide", "Definitely sunrise! The marble changes color from pink to white as the sun comes up. It's magical and much less crowded.", t1, null, null));
+
+                // Adding Messages to the Thread
+                t1.getConversation().add(ThreadMessage.builder()
+                    .author("TravelBug99")
+                    .content("Is sunrise or sunset better for photography at the Taj Mahal?")
+                    .thread(t1)
+                    .build());
+
+                t1.getConversation().add(ThreadMessage.builder()
+                    .author("RahulGuide")
+                    .content("Definitely sunrise! The light on the white marble is magical.")
+                    .thread(t1)
+                    .build());
+
                 forumThreadRepository.save(t1);
             }
+            
+            System.out.println("✅ Data Initialization Complete!");
         };
     }
 }
