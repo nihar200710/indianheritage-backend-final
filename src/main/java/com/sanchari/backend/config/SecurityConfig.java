@@ -38,7 +38,8 @@ public class SecurityConfig {
                 // This list allows both your local testing and your live Netlify site
                 config.setAllowedOrigins(List.of(
                     "http://localhost:5173",
-                    "https://beamish-ganache-906327.netlify.app"
+                    "https://beamish-ganache-906327.netlify.app",
+                    "https://indianheritage-frontend-final.vercel.app/"
                 ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
